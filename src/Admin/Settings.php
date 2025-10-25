@@ -34,6 +34,11 @@ final class Settings {
     private const OPTION_EMAIL_TEMPLATE = 'wpe_fpc_email_template';
 
     /**
+     * Option key for disabling default new user email
+     */
+    private const OPTION_DISABLE_DEFAULT_EMAIL = 'wpe_fpc_disable_default_email';
+
+    /**
      * Initialize hooks
      *
      * @return void
@@ -93,6 +98,12 @@ final class Settings {
             'default'           => self::get_default_email_template(),
             'sanitize_callback' => [__CLASS__, 'sanitize_email_template'],
         ]);
+
+        register_setting('wpe_fpc_settings', self::OPTION_DISABLE_DEFAULT_EMAIL, [
+            'type'              => 'boolean',
+            'default'           => true,
+            'sanitize_callback' => 'rest_sanitize_boolean',
+        ]);
     }
 
     /**
@@ -147,7 +158,36 @@ final class Settings {
     public static function get_default_css(): string {
         return <<<CSS
 body.login.login-action-rp {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Colors */
+    --_login-bg-gradient-start: #667eea;
+    --_login-bg-gradient-end: #764ba2;
+
+    --_login-color-primary: #667eea;
+    --_login-color-secondary: #764ba2;
+    --_login-color-accent: #00a0d2;
+
+    --_login-color-white: #fff;
+    --_login-color-light: #f0f0f0;
+    --_login-color-dark: #333;
+    --_login-color-text: #444;
+
+    --_login-color-warning-bg: #fff3cd;
+    --_login-color-warning-border: #ffc107;
+    --_login-color-warning-text: #856404;
+
+    --_login-color-weak-bg: #f8d7da;
+    --_login-color-weak-border: #f5c6cb;
+    --_login-color-weak-text: #721c24;
+
+    --_login-color-good-bg: #d4edda;
+    --_login-color-good-border: #c3e6cb;
+    --_login-color-good-text: #155724;
+
+    --_login-color-strong-bg: #d1ecf1;
+    --_login-color-strong-border: #bee5eb;
+    --_login-color-strong-text: #0c5460;
+
+    background: linear-gradient(135deg, var(--_login-bg-gradient-start) 0%, var(--_login-bg-gradient-end) 100%);
 
     #login {
         padding-top: 5vh;
@@ -167,27 +207,27 @@ body.login.login-action-rp {
         }
 
         .message {
-            border-left: 4px solid #00a0d2;
-            background: #fff;
+            border-left: 4px solid var(--_login-color-accent);
+            background: var(--_login-color-white);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
 
             strong {
-                color: #00a0d2;
+                color: var(--_login-color-accent);
                 font-size: 1.1em;
             }
 
             p {
                 margin: 10px 0 0;
-                color: #444;
+                color: var(--_login-color-text);
                 line-height: 1.6;
             }
         }
 
         form {
-            background: #fff;
+            background: var(--_login-color-white);
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             padding: 30px;
@@ -198,7 +238,7 @@ body.login.login-action-rp {
 
                 label {
                     font-weight: 600;
-                    color: #333;
+                    color: var(--_login-color-dark);
                     margin-bottom: 8px;
                     display: block;
                 }
@@ -211,7 +251,7 @@ body.login.login-action-rp {
                     transition: all 0.3s ease;
 
                     &:focus {
-                        border-color: #667eea;
+                        border-color: var(--_login-color-primary);
                         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
                         outline: none;
                     }
@@ -220,23 +260,23 @@ body.login.login-action-rp {
                 .button.wp-hide-pw {
                     background: transparent;
                     border: none;
-                    color: #667eea;
+                    color: var(--_login-color-primary);
 
                     &:hover {
-                        color: #764ba2;
+                        color: var(--_login-color-secondary);
                     }
                 }
             }
 
             .pw-weak {
-                background: #fff3cd;
-                border-left: 4px solid #ffc107;
+                background: var(--_login-color-warning-bg);
+                border-left: 4px solid var(--_login-color-warning-border);
                 padding: 12px;
                 margin: 15px 0;
                 border-radius: 4px;
 
                 label {
-                    color: #856404;
+                    color: var(--_login-color-warning-text);
                 }
             }
 
@@ -245,7 +285,7 @@ body.login.login-action-rp {
                 margin-top: 25px;
 
                 .button.button-primary {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    background: linear-gradient(135deg, var(--_login-color-primary) 0%, var(--_login-color-secondary) 100%);
                     border: none;
                     border-radius: 6px;
                     padding: 12px 40px;
@@ -275,38 +315,38 @@ body.login.login-action-rp {
             font-weight: 600;
 
             &.short {
-                background-color: #f8d7da;
-                border-color: #f5c6cb;
-                color: #721c24;
+                background-color: var(--_login-color-weak-bg);
+                border-color: var(--_login-color-weak-border);
+                color: var(--_login-color-weak-text);
             }
 
             &.bad {
-                background-color: #f8d7da;
-                border-color: #f5c6cb;
-                color: #721c24;
+                background-color: var(--_login-color-weak-bg);
+                border-color: var(--_login-color-weak-border);
+                color: var(--_login-color-weak-text);
             }
 
             &.good {
-                background-color: #d4edda;
-                border-color: #c3e6cb;
-                color: #155724;
+                background-color: var(--_login-color-good-bg);
+                border-color: var(--_login-color-good-border);
+                color: var(--_login-color-good-text);
             }
 
             &.strong {
-                background-color: #d1ecf1;
-                border-color: #bee5eb;
-                color: #0c5460;
+                background-color: var(--_login-color-strong-bg);
+                border-color: var(--_login-color-strong-border);
+                color: var(--_login-color-strong-text);
             }
         }
 
         #backtoblog {
             a {
-                color: #fff;
+                color: var(--_login-color-white);
                 text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
                 transition: all 0.3s ease;
 
                 &:hover {
-                    color: #f0f0f0;
+                    color: var(--_login-color-light);
                     text-decoration: underline;
                 }
             }
@@ -317,23 +357,23 @@ body.login.login-action-rp {
         text-align: center;
 
         a {
-            color: #fff;
+            color: var(--_login-color-white);
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
 
             &:hover {
-                color: #f0f0f0;
+                color: var(--_login-color-light);
             }
         }
     }
 
     .privacy-policy-page-link {
         a {
-            color: #fff;
+            color: var(--_login-color-white);
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 
             &:hover {
-                color: #f0f0f0;
+                color: var(--_login-color-light);
             }
         }
     }
@@ -348,6 +388,15 @@ CSS;
      */
     public static function is_enabled(): bool {
         return (bool) get_option(self::OPTION_ENABLED, true);
+    }
+
+    /**
+     * Check if default new user email should be disabled
+     *
+     * @return bool
+     */
+    public static function is_default_email_disabled(): bool {
+        return (bool) get_option(self::OPTION_DISABLE_DEFAULT_EMAIL, true);
     }
 
     /**
@@ -481,145 +530,183 @@ HTML;
             return;
         }
 
-        $enabled         = self::is_enabled();
-        $custom_css      = self::get_custom_css();
-        $email_template  = self::get_email_template();
+        $enabled                = self::is_enabled();
+        $disable_default_email  = self::is_default_email_disabled();
+        $custom_css             = self::get_custom_css();
+        $email_template         = self::get_email_template();
         ?>
         <div class="wrap wpe-fpc-settings-wrap">
             <h1><?php esc_html_e('Force Password Change Settings', 'wp-easy-force-password-change'); ?></h1>
 
+            <!-- Tab Navigation -->
+            <nav class="wpe-fpc-tabs-nav">
+                <button class="wpe-fpc-tab-button wpe-fpc-tab-active" data-tab="general">
+                    <?php esc_html_e('General', 'wp-easy-force-password-change'); ?>
+                </button>
+                <button class="wpe-fpc-tab-button" data-tab="style">
+                    <?php esc_html_e('Style', 'wp-easy-force-password-change'); ?>
+                </button>
+                <button class="wpe-fpc-tab-button" data-tab="email">
+                    <?php esc_html_e('Email Template', 'wp-easy-force-password-change'); ?>
+                </button>
+            </nav>
+
             <div class="wpe-fpc-settings-container">
-                <!-- Enable/Disable Toggle -->
-                <div class="wpe-fpc-setting-card">
-                    <div class="wpe-fpc-setting-header">
-                        <h2><?php esc_html_e('Plugin Status', 'wp-easy-force-password-change'); ?></h2>
-                        <div class="wpe-fpc-save-indicator" id="wpe-fpc-save-indicator">
-                            <span class="dashicons dashicons-saved"></span>
-                            <span class="wpe-fpc-save-text"><?php esc_html_e('Saved', 'wp-easy-force-password-change'); ?></span>
+                <!-- General Tab -->
+                <div class="wpe-fpc-tab-content wpe-fpc-tab-active" data-tab-content="general">
+                    <div class="wpe-fpc-setting-card">
+                        <div class="wpe-fpc-setting-header">
+                            <h2><?php esc_html_e('Plugin Settings', 'wp-easy-force-password-change'); ?></h2>
+                            <div class="wpe-fpc-save-indicator" id="wpe-fpc-save-indicator">
+                                <span class="dashicons dashicons-saved"></span>
+                                <span class="wpe-fpc-save-text"><?php esc_html_e('Saved', 'wp-easy-force-password-change'); ?></span>
+                            </div>
+                        </div>
+
+                        <div class="wpe-fpc-setting-body">
+                            <div class="wpe-fpc-toggle-setting">
+                                <label class="wpe-fpc-toggle">
+                                    <input
+                                        type="checkbox"
+                                        id="wpe-fpc-enabled"
+                                        name="enabled"
+                                        <?php checked($enabled, true); ?>
+                                    >
+                                    <span class="wpe-fpc-toggle-slider"></span>
+                                </label>
+                                <div class="wpe-fpc-toggle-label">
+                                    <strong><?php esc_html_e('Enable Force Password Change', 'wp-easy-force-password-change'); ?></strong>
+                                    <p class="description">
+                                        <?php esc_html_e('When enabled, users flagged for password reset will be intercepted at login and redirected to the password reset page.', 'wp-easy-force-password-change'); ?>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="wpe-fpc-toggle-setting" style="margin-top: 20px;">
+                                <label class="wpe-fpc-toggle">
+                                    <input
+                                        type="checkbox"
+                                        id="wpe-fpc-disable-default-email"
+                                        name="disable_default_email"
+                                        <?php checked($disable_default_email, true); ?>
+                                    >
+                                    <span class="wpe-fpc-toggle-slider"></span>
+                                </label>
+                                <div class="wpe-fpc-toggle-label">
+                                    <strong><?php esc_html_e('Disable Default New User Email', 'wp-easy-force-password-change'); ?></strong>
+                                    <p class="description">
+                                        <?php esc_html_e('When enabled, WordPress will not send the default new user notification email. Instead, our custom email template will be used.', 'wp-easy-force-password-change'); ?>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="wpe-fpc-setting-body">
-                        <div class="wpe-fpc-toggle-setting">
-                            <label class="wpe-fpc-toggle">
-                                <input
-                                    type="checkbox"
-                                    id="wpe-fpc-enabled"
-                                    name="enabled"
-                                    <?php checked($enabled, true); ?>
+                <!-- Style Tab -->
+                <div class="wpe-fpc-tab-content" data-tab-content="style">
+                    <div class="wpe-fpc-setting-card">
+                        <div class="wpe-fpc-setting-header">
+                            <h2><?php esc_html_e('Password Reset Page Styling', 'wp-easy-force-password-change'); ?></h2>
+                            <div class="wpe-fpc-button-group">
+                                <button
+                                    type="button"
+                                    class="button"
+                                    id="wpe-fpc-save-as-default"
                                 >
-                                <span class="wpe-fpc-toggle-slider"></span>
-                            </label>
-                            <div class="wpe-fpc-toggle-label">
-                                <strong><?php esc_html_e('Enable Force Password Change', 'wp-easy-force-password-change'); ?></strong>
-                                <p class="description">
-                                    <?php esc_html_e('When enabled, users flagged for password reset will be intercepted at login and redirected to the password reset page.', 'wp-easy-force-password-change'); ?>
-                                </p>
+                                    <?php esc_html_e('Save as Default', 'wp-easy-force-password-change'); ?>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="button"
+                                    id="wpe-fpc-reset-css"
+                                >
+                                    <?php esc_html_e('Reset to Default', 'wp-easy-force-password-change'); ?>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="wpe-fpc-setting-body">
+                            <p class="description" style="margin-bottom: 15px;">
+                                <?php esc_html_e('Customize the appearance of the password reset page. Changes are auto-saved and applied only to the password reset flow (login-action-rp).', 'wp-easy-force-password-change'); ?>
+                            </p>
+
+                            <div id="wpe-fpc-css-editor-container">
+                                <textarea
+                                    id="wpe-fpc-css-editor"
+                                    name="custom_css"
+                                    rows="20"
+                                    style="width: 100%; font-family: monospace;"
+                                ><?php echo esc_textarea($custom_css); ?></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- CSS Editor -->
-                <div class="wpe-fpc-setting-card">
-                    <div class="wpe-fpc-setting-header">
-                        <h2><?php esc_html_e('Password Reset Page Styling', 'wp-easy-force-password-change'); ?></h2>
-                        <div class="wpe-fpc-button-group">
+                <!-- Email Template Tab -->
+                <div class="wpe-fpc-tab-content" data-tab-content="email">
+                    <div class="wpe-fpc-setting-card">
+                        <div class="wpe-fpc-setting-header">
+                            <h2><?php esc_html_e('Password Reset Email Template', 'wp-easy-force-password-change'); ?></h2>
                             <button
                                 type="button"
-                                class="button"
-                                id="wpe-fpc-save-as-default"
+                                class="button button-primary"
+                                id="wpe-fpc-save-email-template"
                             >
-                                <?php esc_html_e('Save as Default', 'wp-easy-force-password-change'); ?>
-                            </button>
-                            <button
-                                type="button"
-                                class="button"
-                                id="wpe-fpc-reset-css"
-                            >
-                                <?php esc_html_e('Reset to Default', 'wp-easy-force-password-change'); ?>
+                                <?php esc_html_e('Save Email Template', 'wp-easy-force-password-change'); ?>
                             </button>
                         </div>
-                    </div>
 
-                    <div class="wpe-fpc-setting-body">
-                        <p class="description" style="margin-bottom: 15px;">
-                            <?php esc_html_e('Customize the appearance of the password reset page. Changes are auto-saved and applied only to the password reset flow (login-action-rp).', 'wp-easy-force-password-change'); ?>
-                        </p>
+                        <div class="wpe-fpc-setting-body">
+                            <p class="description" style="margin-bottom: 15px;">
+                                <?php esc_html_e('Customize the password reset email template. Use the placeholders below to insert dynamic content.', 'wp-easy-force-password-change'); ?>
+                            </p>
 
-                        <div id="wpe-fpc-css-editor-container">
-                            <textarea
-                                id="wpe-fpc-css-editor"
-                                name="custom_css"
-                                rows="20"
-                                style="width: 100%; font-family: monospace;"
-                            ><?php echo esc_textarea($custom_css); ?></textarea>
+                            <!-- Placeholders -->
+                            <div class="wpe-fpc-placeholders" style="margin-bottom: 20px; padding: 15px; background: #2c2c2c; border: 1px solid #444; border-radius: 4px;">
+                                <h4 style="margin-top: 0; color: #e0e0e0;"><?php esc_html_e('Available Placeholders (Click to Copy)', 'wp-easy-force-password-change'); ?></h4>
+
+                                <div style="margin-bottom: 10px;">
+                                    <strong style="color: #e0e0e0;"><?php esc_html_e('User:', 'wp-easy-force-password-change'); ?></strong><br>
+                                    <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{user_login}}" style="margin: 2px;">{{user_login}}</button>
+                                    <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{user_email}}" style="margin: 2px;">{{user_email}}</button>
+                                    <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{user_display_name}}" style="margin: 2px;">{{user_display_name}}</button>
+                                    <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{user_first_name}}" style="margin: 2px;">{{user_first_name}}</button>
+                                    <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{user_last_name}}" style="margin: 2px;">{{user_last_name}}</button>
+                                </div>
+
+                                <div style="margin-bottom: 10px;">
+                                    <strong style="color: #e0e0e0;"><?php esc_html_e('Site:', 'wp-easy-force-password-change'); ?></strong><br>
+                                    <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{site_name}}" style="margin: 2px;">{{site_name}}</button>
+                                    <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{site_url}}" style="margin: 2px;">{{site_url}}</button>
+                                    <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{admin_email}}" style="margin: 2px;">{{admin_email}}</button>
+                                </div>
+
+                                <div>
+                                    <strong style="color: #e0e0e0;"><?php esc_html_e('Reset:', 'wp-easy-force-password-change'); ?></strong><br>
+                                    <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{reset_url}}" style="margin: 2px;">{{reset_url}}</button>
+                                    <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{reason}}" style="margin: 2px;">{{reason}}</button>
+                                </div>
+                            </div>
+
+                            <!-- WYSIWYG Editor -->
+                            <?php
+                            wp_editor(
+                                $email_template,
+                                'wpe_fpc_email_template',
+                                [
+                                    'textarea_name' => 'email_template',
+                                    'textarea_rows' => 15,
+                                    'teeny'         => false,
+                                    'media_buttons' => false,
+                                    'tinymce'       => [
+                                        'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,unlink,forecolor,backcolor,removeformat,code',
+                                        'toolbar2' => '',
+                                    ],
+                                ]
+                            );
+                            ?>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Email Template Editor -->
-                <div class="wpe-fpc-setting-card">
-                    <div class="wpe-fpc-setting-header">
-                        <h2><?php esc_html_e('Password Reset Email Template', 'wp-easy-force-password-change'); ?></h2>
-                        <button
-                            type="button"
-                            class="button button-primary"
-                            id="wpe-fpc-save-email-template"
-                        >
-                            <?php esc_html_e('Save Email Template', 'wp-easy-force-password-change'); ?>
-                        </button>
-                    </div>
-
-                    <div class="wpe-fpc-setting-body">
-                        <p class="description" style="margin-bottom: 15px;">
-                            <?php esc_html_e('Customize the password reset email template. Use the placeholders below to insert dynamic content.', 'wp-easy-force-password-change'); ?>
-                        </p>
-
-                        <!-- Placeholders -->
-                        <div class="wpe-fpc-placeholders" style="margin-bottom: 20px; padding: 15px; background: #2c2c2c; border: 1px solid #444; border-radius: 4px;">
-                            <h4 style="margin-top: 0; color: #e0e0e0;"><?php esc_html_e('Available Placeholders (Click to Copy)', 'wp-easy-force-password-change'); ?></h4>
-
-                            <div style="margin-bottom: 10px;">
-                                <strong style="color: #e0e0e0;"><?php esc_html_e('User:', 'wp-easy-force-password-change'); ?></strong><br>
-                                <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{user_login}}" style="margin: 2px;">{{user_login}}</button>
-                                <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{user_email}}" style="margin: 2px;">{{user_email}}</button>
-                                <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{user_display_name}}" style="margin: 2px;">{{user_display_name}}</button>
-                                <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{user_first_name}}" style="margin: 2px;">{{user_first_name}}</button>
-                                <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{user_last_name}}" style="margin: 2px;">{{user_last_name}}</button>
-                            </div>
-
-                            <div style="margin-bottom: 10px;">
-                                <strong style="color: #e0e0e0;"><?php esc_html_e('Site:', 'wp-easy-force-password-change'); ?></strong><br>
-                                <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{site_name}}" style="margin: 2px;">{{site_name}}</button>
-                                <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{site_url}}" style="margin: 2px;">{{site_url}}</button>
-                                <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{admin_email}}" style="margin: 2px;">{{admin_email}}</button>
-                            </div>
-
-                            <div>
-                                <strong style="color: #e0e0e0;"><?php esc_html_e('Reset:', 'wp-easy-force-password-change'); ?></strong><br>
-                                <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{reset_url}}" style="margin: 2px;">{{reset_url}}</button>
-                                <button type="button" class="button button-small wpe-fpc-copy-placeholder" data-placeholder="{{reason}}" style="margin: 2px;">{{reason}}</button>
-                            </div>
-                        </div>
-
-                        <!-- WYSIWYG Editor -->
-                        <?php
-                        wp_editor(
-                            $email_template,
-                            'wpe_fpc_email_template',
-                            [
-                                'textarea_name' => 'email_template',
-                                'textarea_rows' => 15,
-                                'teeny'         => false,
-                                'media_buttons' => false,
-                                'tinymce'       => [
-                                    'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,unlink,forecolor,backcolor,removeformat,code',
-                                    'toolbar2' => '',
-                                ],
-                            ]
-                        );
-                        ?>
                     </div>
                 </div>
             </div>
@@ -644,11 +731,13 @@ HTML;
         }
 
         // Get settings
-        $enabled    = isset($_POST['enabled']) ? rest_sanitize_boolean($_POST['enabled']) : false;
-        $custom_css = isset($_POST['custom_css']) ? self::sanitize_css(wp_unslash($_POST['custom_css'])) : '';
+        $enabled               = isset($_POST['enabled']) ? rest_sanitize_boolean($_POST['enabled']) : false;
+        $disable_default_email = isset($_POST['disable_default_email']) ? rest_sanitize_boolean($_POST['disable_default_email']) : false;
+        $custom_css            = isset($_POST['custom_css']) ? self::sanitize_css(wp_unslash($_POST['custom_css'])) : '';
 
         // Save settings
         update_option(self::OPTION_ENABLED, $enabled);
+        update_option(self::OPTION_DISABLE_DEFAULT_EMAIL, $disable_default_email);
         update_option(self::OPTION_CUSTOM_CSS, $custom_css);
 
         wp_send_json_success([

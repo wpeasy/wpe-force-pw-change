@@ -14,6 +14,9 @@
      * Initialize settings page
      */
     async function init() {
+        // Initialize tabs
+        initTabs();
+
         // Initialize toggle
         initToggle();
 
@@ -32,6 +35,50 @@
     }
 
     /**
+     * Initialize tab switching
+     */
+    function initTabs() {
+        const tabButtons = document.querySelectorAll('.wpe-fpc-tab-button');
+        if (!tabButtons.length) return;
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.getAttribute('data-tab');
+                switchTab(tabName);
+            });
+        });
+    }
+
+    /**
+     * Switch to a specific tab
+     *
+     * @param {string} tabName Tab identifier
+     */
+    function switchTab(tabName) {
+        // Remove active class from all buttons
+        document.querySelectorAll('.wpe-fpc-tab-button').forEach(btn => {
+            btn.classList.remove('wpe-fpc-tab-active');
+        });
+
+        // Remove active class from all content
+        document.querySelectorAll('.wpe-fpc-tab-content').forEach(content => {
+            content.classList.remove('wpe-fpc-tab-active');
+        });
+
+        // Add active class to clicked button
+        const activeButton = document.querySelector(`.wpe-fpc-tab-button[data-tab="${tabName}"]`);
+        if (activeButton) {
+            activeButton.classList.add('wpe-fpc-tab-active');
+        }
+
+        // Add active class to corresponding content
+        const activeContent = document.querySelector(`.wpe-fpc-tab-content[data-tab-content="${tabName}"]`);
+        if (activeContent) {
+            activeContent.classList.add('wpe-fpc-tab-active');
+        }
+    }
+
+    /**
      * Initialize enable/disable toggle
      */
     function initToggle() {
@@ -41,6 +88,14 @@
         toggle.addEventListener('change', () => {
             saveSettings();
         });
+
+        // Also handle disable default email toggle
+        const disableDefaultEmailToggle = document.getElementById('wpe-fpc-disable-default-email');
+        if (disableDefaultEmailToggle) {
+            disableDefaultEmailToggle.addEventListener('change', () => {
+                saveSettings();
+            });
+        }
     }
 
     /**
@@ -77,7 +132,7 @@
             // Custom theme with height and autocomplete fix
             const customTheme = EditorView.theme({
                 "&": {
-                    height: "500px",
+                    height: "70vh",
                     border: "1px solid #44475a",
                     borderRadius: "4px",
                     fontSize: "14px"
@@ -161,6 +216,7 @@
      */
     async function saveSettings() {
         const enabledToggle = document.getElementById('wpe-fpc-enabled');
+        const disableDefaultEmailToggle = document.getElementById('wpe-fpc-disable-default-email');
         const textarea = document.getElementById('wpe-fpc-css-editor');
         const indicator = document.getElementById('wpe-fpc-save-indicator');
 
@@ -181,6 +237,7 @@
         formData.append('action', 'wpe_fpc_save_settings');
         formData.append('nonce', wpeFpcSettings.nonce);
         formData.append('enabled', enabledToggle.checked ? '1' : '0');
+        formData.append('disable_default_email', disableDefaultEmailToggle && disableDefaultEmailToggle.checked ? '1' : '0');
         formData.append('custom_css', cssValue);
 
         try {

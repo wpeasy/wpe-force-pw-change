@@ -3,7 +3,7 @@
  * Plugin Name: WP Easy Force Password Change
  * Plugin URI: https://github.com/yourusername/wp-easy-force-password-change
  * Description: Enforce password change workflow for users created programmatically or via WP Admin. Intercepts login and redirects to password reset flow until password is changed.
- * Version: 0.0.1-alpha
+ * Version: 0.0.2-alpha
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Your Name
@@ -19,7 +19,7 @@
 defined('ABSPATH') || exit;
 
 // Define plugin constants
-define('WPE_FPC_VERSION', '0.0.1-alpha');
+define('WPE_FPC_VERSION', '0.0.2-alpha');
 define('WPE_FPC_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('WPE_FPC_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WPE_FPC_PLUGIN_FILE', __FILE__);

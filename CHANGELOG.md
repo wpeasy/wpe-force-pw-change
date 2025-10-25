@@ -5,6 +5,30 @@ All notable changes to WP Easy Force Password Change will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.2-alpha] - 2025-10-26
+
+### Added
+- Tabbed layout for Settings page (General, Style, Email Template tabs)
+- JavaScript-based tab switching with no page reloads
+- CSS custom properties (variables) for easy color scheme customization
+- Disable default WordPress new user email option
+- Filter hooks to prevent default new user notifications when custom template is enabled
+
+### Changed
+- Settings page reorganized into three logical tabs
+- CSS editor height increased to 70vh for better editing experience
+- Default CSS now uses CSS custom properties for all color values
+- General settings (toggles) moved to dedicated General tab
+- Style editor isolated in Style tab
+- Email template editor isolated in Email Template tab
+
+### Technical
+- Tab navigation with `.wpe-fpc-tab-button` and `.wpe-fpc-tab-content` classes
+- Active tab management via `wpe-fpc-tab-active` class
+- CodeMirror 6 editor height updated to 70vh
+- Fallback textarea min-height updated to 70vh
+- Color variables prefixed with `--_login-` for scoping
+
 ## [0.0.1-alpha] - 2025-10-25
 
 ### Added

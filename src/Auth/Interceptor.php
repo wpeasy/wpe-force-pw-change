@@ -42,6 +42,10 @@ final class Interceptor {
 
         // Auto-flag when admin sets password
         add_action('profile_update', [__CLASS__, 'auto_flag_on_profile_update'], 10, 2);
+
+        // Disable default new user email if setting is enabled
+        add_filter('wp_new_user_notification_email', [__CLASS__, 'maybe_disable_new_user_email'], 10, 3);
+        add_filter('wp_new_user_notification_email_admin', [__CLASS__, 'maybe_disable_admin_new_user_email'], 10, 3);
     }
 
     /**
@@ -181,5 +185,37 @@ final class Interceptor {
 
             update_user_meta($user_id, self::META_MUST_CHANGE, 1);
         }
+    }
+
+    /**
+     * Maybe disable default new user notification email
+     *
+     * @param array    $wp_new_user_notification_email Email array
+     * @param \WP_User $user                           User object
+     * @param string   $blogname                       Blog name
+     * @return array|false Email array or false to disable
+     */
+    public static function maybe_disable_new_user_email($wp_new_user_notification_email, $user, $blogname) {
+        // Check if we should disable default email
+        if (class_exists('WP_Easy\\ForcePW_Change\\Admin\\Settings') && Admin\Settings::is_default_email_disabled()) {
+            return false; // Disable default email
+        }
+        return $wp_new_user_notification_email; // Allow default email
+    }
+
+    /**
+     * Maybe disable default new user notification email to admin
+     *
+     * @param array    $wp_new_user_notification_email_admin Email array
+     * @param \WP_User $user                                 User object
+     * @param string   $blogname                             Blog name
+     * @return array|false Email array or false to disable
+     */
+    public static function maybe_disable_admin_new_user_email($wp_new_user_notification_email_admin, $user, $blogname) {
+        // Check if we should disable default admin notification
+        if (class_exists('WP_Easy\\ForcePW_Change\\Admin\\Settings') && Admin\Settings::is_default_email_disabled()) {
+            return false; // Disable admin notification
+        }
+        return $wp_new_user_notification_email_admin; // Allow admin notification
     }
 }
