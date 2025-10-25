@@ -249,5 +249,115 @@ define('WPE_FPC_PLUGIN_URL', plugin_dir_url(__FILE__));
 
 ---
 **Notes:**
-- Using a very large `password_reset_expiration` retains compatibility with the native `action=rp` flow while effectively making links “non-expiring” until the password is changed.
+- Using a very large `password_reset_expiration` retains compatibility with the native `action=rp` flow while effectively making links "non-expiring" until the password is changed.
 - We rotate keys on each intercept to reduce stale link reuse and to respect any policy that might later reduce expiration.
+
+---
+
+## Implementation Notes (v0.0.1-alpha)
+
+### Actual Implementation
+The plugin has been fully implemented following the spec with the following structure:
+
+**File Structure:**
+```
+/wpe-force-pw-change
+  /src
+    /Admin
+      Settings.php      - Settings page with CSS editor and email template editor
+      Admin_UI.php      - Edit User page integration
+      Users_List.php    - Users list table enhancements
+    /Auth
+      Interceptor.php   - Login interception and auto-flagging
+      Reset_Link.php    - Key generation, email sending, CSS output
+    Plugin.php          - Bootstrap class
+  /assets
+    /css
+      admin.css         - User list and edit page styles
+      settings.css      - Settings page styles
+    /js
+      admin.js          - Admin functionality (copy links, bulk confirmations)
+      settings.js       - CodeMirror 6 editor, WYSIWYG handlers, placeholder copying
+  wp-easy-force-password-change.php - Main plugin file
+  composer.json         - PSR-4 autoloading
+  CLAUDE.md            - This specification
+  CHANGELOG.md         - Version history
+  readme.txt           - WordPress plugin readme
+```
+
+### Key Implementation Details
+
+**Settings Page:**
+- CodeMirror 6 editor for CSS (loaded from esm.sh CDN)
+- Uses Dracula theme for dark mode consistency
+- Auto-save for CSS with 1-second debounce
+- WordPress TinyMCE WYSIWYG editor for email templates
+- Manual save button for email templates
+- Click-to-copy placeholder buttons with visual feedback
+- Settings stored in wp_options:
+  - `wpe_fpc_enabled` - Plugin enabled status
+  - `wpe_fpc_custom_css` - Custom CSS for reset page
+  - `wpe_fpc_user_default_css` - User-defined default CSS
+  - `wpe_fpc_email_template` - Email template HTML
+
+**Email Template System:**
+- Template stored with placeholders (e.g., `{{user_display_name}}`)
+- Placeholders replaced at send time with actual values
+- Supports user data, site data, and reset-specific data
+- Minimal sanitization (allows HTML tables and styling, strips scripts)
+
+**CSS Handling:**
+- Custom CSS output only on `action=rp` pages
+- Uses nested CSS syntax
+- WordPress magic quotes handled with `wp_unslash()`
+- No escaping on output (already sanitized on save)
+
+**Login Intercept:**
+- Hooks `authenticate` filter at priority 30
+- Always generates fresh reset key (no throttling)
+- Redirects to `wp-login.php?action=rp&key={key}&login={login}`
+- Sets meta `wpe_fpc_must_change_pw` = 1
+- Updates `wpe_fpc_last_issued` timestamp
+
+**Row Actions vs Forms:**
+- Initially used nested forms (invalid HTML)
+- Fixed by using `admin_action_{action}` hooks for row actions
+- Links with nonces instead of form submissions
+- Prevents "User Updated" message when forcing reset
+
+**Meta Value Consistency:**
+- All `update_user_meta()` calls use integer `1` instead of boolean `true`
+- Ensures consistent boolean checks with `(bool) get_user_meta()`
+
+### WordPress Compatibility Notes
+
+**WordPress Magic Quotes:**
+All AJAX handlers must use `wp_unslash()` on POST data before processing to remove automatically added backslashes.
+
+**Password Reset Keys:**
+- Cannot reuse keys from database (stored as hashes)
+- Must generate fresh key on each intercept
+- WordPress 6.3+ passes user_id to `password_reset_expiration` filter
+- Older versions only pass expiration (handled with optional parameter)
+
+**CodeMirror 6 Loading:**
+- WordPress ships with CodeMirror 5
+- Must dequeue WP's CodeMirror to prevent conflicts
+- Load CodeMirror 6 modules from esm.sh using Promise.all()
+- Mark script as ES module: `<script type="module">`
+
+### Security Considerations Implemented
+- All admin actions use nonces
+- Capability checks: `manage_options` for settings, `edit_user` for user actions
+- `wp_safe_redirect()` for all redirects
+- `wp_kses()` for email template sanitization
+- `strip_tags()` for CSS sanitization
+- `wp_unslash()` to handle WordPress magic quotes
+- No user enumeration (generic error messages)
+
+### Known Limitations
+- REST API endpoints not implemented (admin actions used instead)
+- No multisite-specific testing performed
+- No advanced throttling/rate limiting
+- Email sending uses wp_mail() (no SMTP configuration)
+- No logging/history of reset actions beyond last_issued timestamp
