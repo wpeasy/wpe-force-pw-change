@@ -1,0 +1,233 @@
+/**
+ * Admin styles for WP Easy Force Password Change
+ *
+ * @package WP_Easy\ForcePW_Change
+ */
+
+/* Profile Section */
+.wpe-fpc-profile-section {
+    margin-top: 20px;
+
+    h2 {
+        margin-bottom: 15px;
+    }
+}
+
+/* Status Indicators */
+.wpe-fpc-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+
+    .dashicons {
+        width: 20px;
+        height: 20px;
+        font-size: 20px;
+    }
+}
+
+.wpe-fpc-status-active {
+    color: #d63638;
+}
+
+.wpe-fpc-status-inactive {
+    color: #00a32a;
+}
+
+/* Badges in List Table */
+.wpe-fpc-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.wpe-fpc-badge-yes {
+    background: #d63638;
+    color: white;
+}
+
+.wpe-fpc-badge-no {
+    background: #f0f0f1;
+    color: #50575e;
+}
+
+/* Reset URL Container */
+#wpe-fpc-reset-url-container {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f0f0f1;
+    border-radius: 4px;
+
+    &.wpe-fpc-show {
+        display: block !important;
+    }
+}
+
+#wpe-fpc-reset-url {
+    width: 100%;
+    max-width: 600px;
+    font-family: monospace;
+    font-size: 12px;
+    padding: 8px;
+    background: white;
+    border: 1px solid #8c8f94;
+    border-radius: 3px;
+}
+
+/* Action Buttons Container */
+.wpe-fpc-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+
+    form {
+        margin: 0;
+    }
+}
+
+/* Column Styling */
+.column-wpe_fpc_status {
+    width: 140px;
+
+    span {
+        display: block;
+    }
+}
+
+/* Responsive Adjustments */
+@container (max-width: 782px) {
+    .wpe-fpc-actions {
+        flex-direction: column;
+        align-items: flex-start;
+
+        form,
+        button {
+            width: 100%;
+        }
+    }
+
+    #wpe-fpc-reset-url {
+        max-width: 100%;
+    }
+}
+
+/* Success/Error Messages */
+.wpe-fpc-message {
+    padding: 8px 12px;
+    margin: 10px 0;
+    border-radius: 3px;
+
+    &.wpe-fpc-success {
+        background: #d7f8e0;
+        border-left: 4px solid #00a32a;
+        color: #00501a;
+    }
+
+    &.wpe-fpc-error {
+        background: #f8d7da;
+        border-left: 4px solid #d63638;
+        color: #50001a;
+    }
+}
+
+/* Loading State */
+.wpe-fpc-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 2px solid #f0f0f1;
+        border-top-color: #0073aa;
+        border-radius: 50%;
+        animation: wpe-fpc-spin 0.8s linear infinite;
+    }
+}
+
+@keyframes wpe-fpc-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Tooltips */
+.wpe-fpc-tooltip {
+    position: relative;
+    display: inline-block;
+
+    &:hover .wpe-fpc-tooltip-text {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+.wpe-fpc-tooltip-text {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1d2327;
+    color: white;
+    text-align: center;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1;
+    transition: opacity 0.3s;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #1d2327 transparent transparent transparent;
+    }
+}
+
+/* Focus Styles */
+button:focus,
+input:focus {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .wpe-fpc-badge-yes {
+        border: 2px solid currentColor;
+    }
+
+    .wpe-fpc-badge-no {
+        border: 1px solid currentColor;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .wpe-fpc-loading::after {
+        animation: none;
+    }
+
+    .wpe-fpc-tooltip-text {
+        transition: none;
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "name": "wp-easy/force-password-change",
+    "description": "WordPress plugin to enforce password change workflow for users",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "WP_Easy\\ForcePW_Change\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}
