@@ -696,7 +696,7 @@ HTML;
                                 'wpe_fpc_email_template',
                                 [
                                     'textarea_name' => 'email_template',
-                                    'textarea_rows' => 15,
+                                    'textarea_rows' => 20,
                                     'teeny'         => false,
                                     'media_buttons' => false,
                                     'tinymce'       => [

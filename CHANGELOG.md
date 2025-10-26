@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Settings page reorganized into three logical tabs
 - CSS editor height increased to 70vh for better editing experience
+- Email template WYSIWYG editor height set to 500px
+- Email template textarea rows increased to 20
 - Default CSS now uses CSS custom properties for all color values
 - General settings (toggles) moved to dedicated General tab
 - Style editor isolated in Style tab
@@ -27,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Active tab management via `wpe-fpc-tab-active` class
 - CodeMirror 6 editor height updated to 70vh
 - Fallback textarea min-height updated to 70vh
+- TinyMCE iframe height controlled via CSS (#wpe_fpc_email_template_ifr)
 - Color variables prefixed with `--_login-` for scoping
 
 ## [0.0.1-alpha] - 2025-10-25

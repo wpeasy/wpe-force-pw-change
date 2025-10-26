@@ -353,6 +353,12 @@
     }
 }
 
+/* Email Template WYSIWYG Editor Height */
+#wpe_fpc_email_template_ifr {
+    min-height: 500px !important;
+    height: 500px !important;
+}
+
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
     .wpe-fpc-setting-card {
